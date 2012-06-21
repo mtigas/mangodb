@@ -25,7 +25,7 @@ def mangodb(socket, address):
                 output.flush()
                 os.fsync(output.fileno())
             data = os.urandom(1024)
-            if os.environ.get('MANGODB_USE_BCRYPT', True):
+            if os.environ.get('MANGODB_USE_BCRYPT', False):
                 data = bcrypt.hashpw(data.encode('string-escape'), bcrypt.gensalt())
             client.write('OK' + data.encode('string-escape') + '\r\n')
         client.flush()
