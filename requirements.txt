@@ -1,1 +1,2 @@
 gevent==0.13.7
+py-bcrypt==0.2

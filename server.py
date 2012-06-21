@@ -3,6 +3,11 @@ import os
 
 
 def mangodb(socket, address):
+    if os.environ.get('MANGODB_USE_BCRYPT', False):
+        import bcrypt
+    else:
+        bcrypt = None
+
     socket.sendall('HELLO\r\n')
     client = socket.makefile()
     output = open('/dev/null', 'w')
@@ -19,7 +24,10 @@ def mangodb(socket, address):
             if os.environ.get('MANGODB_DURABLE', False):
                 output.flush()
                 os.fsync(output.fileno())
-            client.write('OK' + os.urandom(1024).encode('string-escape') + '\r\n')
+            data = os.urandom(1024)
+            if os.environ.get('MANGODB_USE_BCRYPT', True):
+                data = bcrypt.hashpw(data.encode('string-escape'), bcrypt.gensalt())
+            client.write('OK' + data.encode('string-escape') + '\r\n')
         client.flush()
 
 
